@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Asistencia y Pizarra — 2DO INF A | U.E. Dr. Enrique Noboa Arízaga</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input {
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .app-shell {
+      max-width: 768px;
+      margin: 0 auto;
+      padding-bottom: 104px;
+    }
+
+    /* Header */
+    .app-header {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 16px 16px 14px;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .header-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #fcd34d;
+    }
+
+    .offline-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      text-transform: none;
+      letter-spacing: normal;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .header-title {
+      margin: 4px 0 0;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffffff;
+    }
+
+    .header-subtitle {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .btn-reset {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background-color: #1e293b;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-reset:active {
+      transform: scale(0.96);
+      background-color: #334155;
+    }
+
+    /* Export / Backup bar */
+    .backup-section {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #1e293b;
+    }
+
+    .backup-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    .saved-status {
+      color: #6ee7b7;
+      font-weight: 700;
+    }
+
+    .backup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    @media (min-width: 600px) {
+      .backup-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .btn-tool {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: none;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    .btn-tool:active {
+      transform: scale(0.97);
+    }
+    .btn-csv { background-color: #059669; color: #ffffff; }
+    .btn-json-save { background-color: #4f46e5; color: #ffffff; }
+    .btn-json-load { background-color: #f59e0b; color: #0f172a; }
+    .btn-print { background-color: #2563eb; color: #ffffff; }
+
+    /* Scale bar for Lección / Pizarra */
+    .scale-bar {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .scale-bar-title {
+      font-weight: 800;
+      color: #fcd34d;
+    }
+
+    .scale-inputs-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scale-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background-color: #0f172a;
+      padding: 4px 7px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .scale-chip input {
+      width: 44px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: right;
+      outline: none;
+    }
+
+    .lbl-ep { font-weight: 800; color: #34d399; }
+    .lbl-bp { font-weight: 800; color: #38bdf8; }
+    .lbl-dp { font-weight: 800; color: #fcd34d; }
+    .lbl-np { font-weight: 800; color: #fb7185; }
+
+    /* Warning banner if opened in restricted WebView */
+    .storage-warning {
+      margin: 12px 12px 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background-color: #fef3c7;
+      border: 2px solid #f59e0b;
+      color: #78350f;
+      font-size: 12.5px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    /* Sections */
+    .section-wrap {
+      margin-top: 12px;
+      padding: 0 12px;
+    }
+
+    .card-box {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    /* Date navigator */
+    .date-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn-nav-arrow {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .btn-nav-arrow:active {
+      transform: scale(0.95);
+      background-color: #e2e8f0;
+    }
+
+    .date-title-wrap {
+      text-align: center;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .active-date-label {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .active-date-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .date-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .date-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .date-chip {
+      flex-shrink: 0;
+      min-height: 54px;
+      min-width: 68px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+    .date-chip.is-marked {
+      background-color: #ecfdf5;
+      border-color: #6ee7b7;
+      color: #064e3b;
+    }
+    .date-chip.is-holiday {
+      background-color: #fffbeb;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+    .date-chip.is-active {
+      background-color: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+    }
+
+    .date-chip-short {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .date-chip-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .date-chip.is-active .date-chip-badge {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .date-chip.is-holiday .date-chip-badge {
+      background-color: #fde68a;
+      color: #78350f;
+      border-color: #fcd34d;
+    }
+
+    /* Live counters */
+    .counters-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+
+    .counter-pill {
+      border-radius: 12px;
+      padding: 6px 2px;
+      border: 1px solid #e2e8f0;
+    }
+    .counter-pill-label {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .counter-pill-val {
+      font-size: 17px;
+      font-weight: 800;
+      margin-top: 1px;
+    }
+
+    .cp-p { background-color: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+    .cp-f { background-color: #fff1f2; border-color: #fecdd3; color: #be123c; }
+    .cp-a { background-color: #fffbeb; border-color: #fde68a; color: #b45309; }
+    .cp-j { background-color: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+    .cp-u { background-color: #f1f5f9; border-color: #cbd5e1; color: #334155; }
+
+    /* Bulk actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-bulk {
+      min-height: 46px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .btn-bulk:active {
+      transform: scale(0.98);
+    }
+    .btn-all-p {
+      background-color: #059669;
+      color: #ffffff;
+      border: none;
+    }
+    .btn-clear-day {
+      background-color: #f1f5f9;
+      color: #334155;
+      border: 1.5px solid #cbd5e1;
+    }
+
+    .holiday-banner {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background-color: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #78350f;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* Search box */
+    .search-wrap {
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #64748b;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 42px 10px 38px;
+      border-radius: 14px;
+      border: 1.5px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #0f172a;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+    .btn-clear-search {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: none;
+      background-color: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Student list & cards */
+    .student-list {
+      margin-top: 12px;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .student-card {
+      background-color: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .student-card.state-P { background-color: #f0fdf4; border-color: #6ee7b7; }
+    .student-card.state-F { background-color: #fff1f2; border-color: #fda4af; }
+    .student-card.state-A { background-color: #fffbeb; border-color: #fcd34d; }
+    .student-card.state-J { background-color: #f0f9ff; border-color: #7dd3fc; }
+
+    .student-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .student-ident {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .student-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background-color: #0f172a;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .student-name {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .student-stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .pct-badge {
+      flex-shrink: 0;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .pct-high { background-color: #d1fae5; color: #065f46; }
+    .pct-mid  { background-color: #fef3c7; color: #92400e; }
+    .pct-low  { background-color: #ffe4e6; color: #9f1239; }
+
+    /* Touch buttons P F A J */
+    .code-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .code-btn {
+      min-height: 48px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #334155;
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.05;
+      cursor: pointer;
+      user-select: none;
+    }
+    .code-btn:active {
+      transform: scale(0.95);
+    }
+    .code-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .code-btn-main {
+      font-size: 16px;
+    }
+    .code-btn-sub {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 2px;
+      opacity: 0.9;
+    }
+
+    .code-btn.active-P {
+      background-color: #059669;
+      border-color: #047857;
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(5, 150, 105, 0.35);
+    }
+    .code-btn.active-F {
+      background-color: #e11d48;
+      border-color: #be123c;
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(225, 29, 72, 0.35);
+    }
+    .code-btn.active-A {
+      background-color: #f59e0b;
+      border-color: #d97706;
+      color: #0f172a;
+      box-shadow: 0 2px 5px rgba(245, 158, 11, 0.35);
+    }
+    .code-btn.active-J {
+      background-color: #0284c7;
+      border-color: #0369a1;
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Board / Lección section inside student card */
+    .board-section {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .board-status {
+      color: #4338ca;
+      font-weight: 800;
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .board-btn {
+      min-height: 42px;
+      padding: 4px 4px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      background-color: #f8fafc;
+      color: #334155;
+      font-size: 10.5px;
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.15;
+      cursor: pointer;
+      user-select: none;
+    }
+    .board-btn:active {
+      transform: scale(0.95);
+    }
+    .board-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .board-btn.is-picked {
+      background-color: #4f46e5;
+      border-color: #4338ca;
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(79, 70, 229, 0.35);
+    }
+    .board-pts {
+      font-size: 9.5px;
+      font-weight: 700;
+      opacity: 0.85;
+      margin-top: 1px;
+    }
+
+    /* Toast notification */
+    .toast-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translate(-50%, 16px);
+      z-index: 60;
+      width: 92%;
+      max-width: 420px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .toast-bar.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .toast-content {
+      background-color: #0f172a;
+      color: #ffffff;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    .toast-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: rgba(16, 185, 129, 0.22);
+      color: #6ee7b7;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background-color: rgba(15, 23, 42, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      max-width: 380px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .modal-desc {
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.45;
+    }
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-modal-cancel {
+      min-height: 46px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-modal-accept {
+      min-height: 46px;
+      border-radius: 12px;
+      border: none;
+      background-color: #e11d48;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Print sheet (hidden on screen) */
+    .print-only {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+        padding: 4px;
+      }
+      .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #1e293b;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
+      }
+      .print-inst {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .print-sub {
+        font-size: 9px;
+        font-weight: 600;
+        color: #334155;
+      }
+      .print-right {
+        text-align: right;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      table.print-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 6.5pt;
+        line-height: 1.08;
+      }
+      table.print-table th,
+      table.print-table td {
+        border: 0.6pt solid #475569;
+        padding: 1.5px 2px;
+        text-align: center;
+      }
+      table.print-table th {
+        background-color: #e2e8f0;
+      }
+      table.print-table th.student-col,
+      table.print-table td.student-col {
+        text-align: left;
+        white-space: nowrap;
+        padding-left: 4px;
+      }
+      .print-sub-board {
+        font-size: 5pt;
+        color: #3730a3;
+        font-weight: 800;
+      }
+      .print-footer {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 8.5px;
+        font-weight: 600;
+        color: #334155;
+      }
+      .print-signs {
+        display: flex;
+        gap: 36px;
+        padding-right: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell" class="no-print app-shell">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="header-info">
+          <div class="header-meta">
+            <span>U.E. "Dr. Enrique Noboa Arízaga"</span>
+            <span>•</span>
+            <span>2026–2027</span>
+            <span class="offline-pill">
+              <span>●</span>
+              <span>100% Sin Internet</span>
+            </span>
+          </div>
+          <h1 class="header-title">Asistencia y Pizarra — 2do Informática "A"</h1>
+          <p class="header-subtitle">Matemática • 3er Trimestre (Mar y Mié) • Msc. Edwin Lliguipuma E.</p>
+        </div>
+        <button id="btn-reset-data" type="button" class="btn-reset">Reiniciar</button>
+      </div>
+
+      <div class="backup-section">
+        <div class="backup-top">
+          <span>🏠 Guardar / Exportar al llegar a casa</span>
+          <span id="last-saved-indicator" class="saved-status">Listo sin conexión</span>
+        </div>
+        <div class="backup-grid">
+          <button id="btn-export-csv" type="button" class="btn-tool btn-csv">
+            <span>📊</span><span>CSV (Excel)</span>
+          </button>
+          <button id="btn-save-json" type="button" class="btn-tool btn-json-save">
+            <span>💾</span><span>Respaldo .JSON</span>
+          </button>
+          <button id="btn-import-json" type="button" class="btn-tool btn-json-load">
+            <span>📂</span><span>Importar .JSON</span>
+          </button>
+          <button id="btn-print-horizontal" type="button" class="btn-tool btn-print">
+            <span>🖨️</span><span>Imprimir Horiz.</span>
+          </button>
+        </div>
+
+        <!-- Escala editable Cualitativo -> Cuantitativo (Lección / Pizarra) -->
+        <div class="scale-bar">
+          <span class="scale-bar-title">✏️ Lección/Pizarra (Cuali → Cuanti):</span>
+          <div class="scale-inputs-row">
+            <label class="scale-chip">
+              <span class="lbl-ep">EP</span>
+              <input id="scale-EP" type="number" step="0.1" min="0" max="10" />
+            </label>
+            <label class="scale-chip">
+              <span class="lbl-bp">BP</span>
+              <input id="scale-BP" type="number" step="0.1" min="0" max="10" />
+            </label>
+            <label class="scale-chip">
+              <span class="lbl-dp">DP</span>
+              <input id="scale-DP" type="number" step="0.1" min="0" max="10" />
+            </label>
+            <label class="scale-chip">
+              <span class="lbl-np">NP</span>
+              <input id="scale-NP" type="number" step="0.1" min="0" max="10" />
+            </label>
+          </div>
+        </div>
+
+        <input id="input-import-json" type="file" accept=".json,application/json" class="hidden" />
+      </div>
+    </header>
+
+    <!-- Aviso automático si se abrió en un visor restringido en vez de Chrome -->
+    <div id="storage-warning" class="storage-warning hidden">
+      ⚠️ Abriste este archivo en un visor previo restringido. Para que los datos queden guardados permanentemente en tu celular, toca los 3 puntos (⋮) arriba a la derecha y elige <b>"Abrir con Chrome"</b> (o guarda un <b>Respaldo .JSON</b>).
+    </div>
+
+    <!-- Selector horizontal de fechas -->
+    <section class="section-wrap">
+      <div class="card-box">
+        <div class="date-nav">
+          <button id="btn-prev-date" type="button" aria-label="Fecha anterior" class="btn-nav-arrow">‹</button>
+          <div class="date-title-wrap">
+            <div id="active-date-label" class="active-date-label">Miércoles 25/11/2026</div>
+            <div id="active-date-sub" class="active-date-sub">Sesión activa • Tercer Trimestre</div>
+          </div>
+          <button id="btn-next-date" type="button" aria-label="Fecha siguiente" class="btn-nav-arrow">›</button>
+        </div>
+        <div id="date-strip" class="date-strip"></div>
+      </div>
+    </section>
+
+    <!-- Contadores + Acciones rápidas -->
+    <section class="section-wrap">
+      <div class="card-box">
+        <div class="counters-grid">
+          <div class="counter-pill cp-p">
+            <div class="counter-pill-label">Presentes</div>
+            <div id="count-p" class="counter-pill-val">0</div>
+          </div>
+          <div class="counter-pill cp-f">
+            <div class="counter-pill-label">Faltas</div>
+            <div id="count-f" class="counter-pill-val">0</div>
+          </div>
+          <div class="counter-pill cp-a">
+            <div class="counter-pill-label">Atrasos</div>
+            <div id="count-a" class="counter-pill-val">0</div>
+          </div>
+          <div class="counter-pill cp-j">
+            <div class="counter-pill-label">Justif.</div>
+            <div id="count-j" class="counter-pill-val">0</div>
+          </div>
+          <div class="counter-pill cp-u">
+            <div class="counter-pill-label">Sin mar.</div>
+            <div id="count-u" class="counter-pill-val">30</div>
+          </div>
+        </div>
+
+        <div id="quick-actions" class="quick-actions">
+          <button id="btn-all-p" type="button" class="btn-bulk btn-all-p">
+            <span>✓</span><span>Todos P (Presentes)</span>
+          </button>
+          <button id="btn-clear-day" type="button" class="btn-bulk btn-clear-day">
+            <span>✕</span><span>Limpiar día</span>
+          </button>
+        </div>
+
+        <div id="holiday-banner" class="holiday-banner hidden">
+          🎉 Feriado Nacional (Carnaval). No se registran asistencias en esta fecha.
+        </div>
+      </div>
+    </section>
+
+    <!-- Buscador -->
+    <section class="section-wrap">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Buscar estudiante por nombre o N.º..."
+          class="search-input"
+        />
+        <button id="btn-clear-search" type="button" aria-label="Borrar búsqueda" class="btn-clear-search hidden">✕</button>
+      </div>
+    </section>
+
+    <!-- Lista de estudiantes -->
+    <main id="student-list" class="student-list"></main>
+  </div>
+
+  <!-- Vista impresión -->
+  <section id="print-sheet" class="print-only">
+    <div class="print-header">
+      <div>
+        <div class="print-inst">UNIDAD EDUCATIVA "DR. ENRIQUE NOBOA ARÍZAGA" — LA TRONCAL, CAÑAR, ECUADOR</div>
+        <div class="print-sub">Año Lectivo: 2026–2027 • Tercer Trimestre • 2do Informática "A" (2DO INF A) • Asignatura: Matemática • Jornada: Matutina</div>
+      </div>
+      <div class="print-right">
+        <div>Docente: Msc. Edwin Lliguipuma E.</div>
+        <div>Asistencia + Pizarra (28 Sesiones)</div>
+      </div>
+    </div>
+    <div id="print-table-container"></div>
+    <div class="print-footer">
+      <div>Asistencia: <b>P</b>=Presente, <b>F</b>=Falta, <b>A</b>=Atraso, <b>J</b>=Justif., <b>FER</b>=Feriado | Pizarra: <b>EP</b>, <b>BP</b>, <b>DP</b>, <b>NP</b></div>
+      <div class="print-signs">
+        <span>____________________________<br/>Docente: Msc. Edwin Lliguipuma E.</span>
+        <span>____________________________<br/>Visto Bueno Vicerrectorado</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast-bar" class="no-print toast-bar">
+    <div class="toast-content">
+      <span id="toast-message">Guardado automáticamente</span>
+      <span id="toast-badge" class="toast-badge">OK</span>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="confirm-modal" class="no-print modal-backdrop hidden">
+    <div class="modal-box">
+      <h2 id="confirm-title" class="modal-title">¿Confirmar acción?</h2>
+      <p id="confirm-desc" class="modal-desc">Esta acción modificará los registros actuales.</p>
+      <div class="modal-actions">
+        <button id="confirm-cancel" type="button" class="btn-modal-cancel">Cancelar</button>
+        <button id="confirm-accept" type="button" class="btn-modal-accept">Sí, continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var STORAGE_KEY = 'asistencia_pizarra_2do_inf_a_3t_2026_2027_v1';
+      var memoryFallback = {};
+      var storageAvailable = true;
+
+      var DEFAULT_SCALE = {
+        EP: 10.0,
+        BP: 8.5,
+        DP: 6.5,
+        NP: 4.0
+      };
+
+      function testStorage() {
+        try {
+          var k = '__test_ls_piz_inf_a__';
+          window.localStorage.setItem(k, '1');
+          window.localStorage.removeItem(k);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      storageAvailable = testStorage();
+
+      function readStore(key) {
+        if (storageAvailable) {
+          try {
+            return window.localStorage.getItem(key);
+          } catch (e) {
+            storageAvailable = false;
+          }
+        }
+        return memoryFallback[key] || null;
+      }
+
+      function writeStore(key, val) {
+        memoryFallback[key] = val;
+        if (storageAvailable) {
+          try {
+            window.localStorage.setItem(key, val);
+            return true;
+          } catch (e) {
+            storageAvailable = false;
+          }
+        }
+        return false;
+      }
+
+      var STUDENTS = [
+        { num: 1, name: 'AREVALO GUALLPA JUSTIN TAYLOR', phone: '' },
+        { num: 2, name: 'AREVALO GUALLPA XAVI ANDRES', phone: '' },
+        { num: 3, name: 'AVILES CUSME LUCIA SOLAIS', phone: '' },
+        { num: 4, name: 'BUESTAN GUIRACOCHA EDUARDO MIGUEL', phone: '' },
+        { num: 5, name: 'CABANILLA ORELLANA NELSON ALEXANDER', phone: '' },
+        { num: 6, name: 'CARBO JUELA MAYKEL EDUARDO', phone: '' },
+        { num: 7, name: 'CARRASCO DELGADO JORGE ADRIAN', phone: '' },
+        { num: 8, name: 'CEDEÑO AYLLON ANDERSON STEVEN', phone: '' },
+        { num: 9, name: 'CHAVEZ CABRERA GREGORY MATEO', phone: '' },
+        { num: 10, name: 'DUMAGUALA CARRANZA KEYLA PAULET', phone: '' },
+        { num: 11, name: 'ESPINOZA PEREZ JULIANA PAOLA', phone: '' },
+        { num: 12, name: 'FERNANDEZ CUNIN ROUSS MARBELLA', phone: '' },
+        { num: 13, name: 'LANDIN GUAMAN AMY VALERIA', phone: '' },
+        { num: 14, name: 'LUGO YUNGANAULA JENNIFER DANITZA', phone: '' },
+        { num: 15, name: 'MERCHAN PLUAS MARIA JOSE', phone: '' },
+        { num: 16, name: 'MONAR SUCUZHAÑAY OMAR SNADER', phone: '' },
+        { num: 17, name: 'MORAN RODRIGUEZ JEANPIERRE MATIAS', phone: '' },
+        { num: 18, name: 'MORENO JARA KEVIN ALEJANDRO', phone: '' },
+        { num: 19, name: 'MOROCHO GUALPA MERCEDES MAITE', phone: '' },
+        { num: 20, name: 'PASTOR RODRIGUEZ EMILY MELISA', phone: '' },
+        { num: 21, name: 'PINCAY TUQUERRES FRANKLIN STEVEN', phone: '' },
+        { num: 22, name: 'QUIROZ ZAMBRANO MARIA NELLY', phone: '' },
+        { num: 23, name: 'REMACHE MENDOZA LUIS MIGUEL', phone: '' },
+        { num: 24, name: 'ROMERO PLUA MIKE ANTHONY', phone: '' },
+        { num: 25, name: 'SANCHEZ CARDENAS DALIA PAULINA', phone: '' },
+        { num: 26, name: 'SANTOS PALACIOS ANDRES DAVID', phone: '' },
+        { num: 27, name: 'SOLIS CASTRO GABRIEL EDUARDO', phone: '' },
+        { num: 28, name: 'TOBAR TIGRE DARWIN ARIEL', phone: '' },
+        { num: 29, name: 'VERA GARCIA ERICK DANIEL', phone: '' },
+        { num: 30, name: 'ZAMBRANO SALAZAR JAILEIDY MILENA', phone: '' }
+      ];
+
+      var DATES = [
+        { id: '2026-11-17', short: 'Ma 17/11', full: 'Martes 17/11/2026', holiday: false },
+        { id: '2026-11-18', short: 'Mi 18/11', full: 'Miércoles 18/11/2026', holiday: false },
+        { id: '2026-11-24', short: 'Ma 24/11', full: 'Martes 24/11/2026', holiday: false },
+        { id: '2026-11-25', short: 'Mi 25/11', full: 'Miércoles 25/11/2026', holiday: false },
+        { id: '2026-12-01', short: 'Ma 01/12', full: 'Martes 01/12/2026', holiday: false },
+        { id: '2026-12-02', short: 'Mi 02/12', full: 'Miércoles 02/12/2026', holiday: false },
+        { id: '2026-12-08', short: 'Ma 08/12', full: 'Martes 08/12/2026', holiday: false },
+        { id: '2026-12-09', short: 'Mi 09/12', full: 'Miércoles 09/12/2026', holiday: false },
+        { id: '2026-12-15', short: 'Ma 15/12', full: 'Martes 15/12/2026', holiday: false },
+        { id: '2026-12-16', short: 'Mi 16/12', full: 'Miércoles 16/12/2026', holiday: false },
+        { id: '2026-12-22', short: 'Ma 22/12', full: 'Martes 22/12/2026', holiday: false },
+        { id: '2026-12-23', short: 'Mi 23/12', full: 'Miércoles 23/12/2026', holiday: false },
+        { id: '2027-01-05', short: 'Ma 05/01', full: 'Martes 05/01/2027', holiday: false },
+        { id: '2027-01-06', short: 'Mi 06/01', full: 'Miércoles 06/01/2027', holiday: false },
+        { id: '2027-01-12', short: 'Ma 12/01', full: 'Martes 12/01/2027', holiday: false },
+        { id: '2027-01-13', short: 'Mi 13/01', full: 'Miércoles 13/01/2027', holiday: false },
+        { id: '2027-01-19', short: 'Ma 19/01', full: 'Martes 19/01/2027', holiday: false },
+        { id: '2027-01-20', short: 'Mi 20/01', full: 'Miércoles 20/01/2027', holiday: false },
+        { id: '2027-01-26', short: 'Ma 26/01', full: 'Martes 26/01/2027', holiday: false },
+        { id: '2027-01-27', short: 'Mi 27/01', full: 'Miércoles 27/01/2027', holiday: false },
+        { id: '2027-02-02', short: 'Ma 02/02', full: 'Martes 02/02/2027', holiday: false },
+        { id: '2027-02-03', short: 'Mi 03/02', full: 'Miércoles 03/02/2027', holiday: false },
+        { id: '2027-02-09', short: 'Ma 09/02', full: 'Martes 09/02/2027 (Feriado Carnaval)', holiday: true },
+        { id: '2027-02-10', short: 'Mi 10/02', full: 'Miércoles 10/02/2027', holiday: false },
+        { id: '2027-02-16', short: 'Ma 16/02', full: 'Martes 16/02/2027', holiday: false },
+        { id: '2027-02-17', short: 'Mi 17/02', full: 'Miércoles 17/02/2027', holiday: false },
+        { id: '2027-02-23', short: 'Ma 23/02', full: 'Martes 23/02/2027', holiday: false },
+        { id: '2027-02-24', short: 'Mi 24/02', full: 'Miércoles 24/02/2027', holiday: false }
+      ];
+
+      function cloneScale(src) {
+        return {
+          EP: src && src.EP !== undefined ? Number(src.EP) : DEFAULT_SCALE.EP,
+          BP: src && src.BP !== undefined ? Number(src.BP) : DEFAULT_SCALE.BP,
+          DP: src && src.DP !== undefined ? Number(src.DP) : DEFAULT_SCALE.DP,
+          NP: src && src.NP !== undefined ? Number(src.NP) : DEFAULT_SCALE.NP
+        };
+      }
+
+      function createSeedData() {
+        var records = {};
+        var boardRecords = {};
+        for (var i = 0; i < DATES.length; i++) {
+          var d = DATES[i];
+          records[d.id] = {};
+          boardRecords[d.id] = {};
+          for (var j = 0; j < STUDENTS.length; j++) {
+            var s = STUDENTS[j];
+            records[d.id][s.num] = '';
+            boardRecords[d.id][s.num] = '';
+          }
+        }
+        return { records: records, boardRecords: boardRecords };
+      }
+
+      var state = {
+        selectedDateId: '2026-11-25',
+        searchQuery: '',
+        scale: cloneScale(DEFAULT_SCALE),
+        records: {},
+        boardRecords: {}
+      };
+
+      var toastTimer = null;
+      var pendingConfirmCallback = null;
+
+      var el = {
+        storageWarning: document.getElementById('storage-warning'),
+        dateStrip: document.getElementById('date-strip'),
+        activeDateLabel: document.getElementById('active-date-label'),
+        activeDateSub: document.getElementById('active-date-sub'),
+        lastSavedIndicator: document.getElementById('last-saved-indicator'),
+        btnPrevDate: document.getElementById('btn-prev-date'),
+        btnNextDate: document.getElementById('btn-next-date'),
+        countP: document.getElementById('count-p'),
+        countF: document.getElementById('count-f'),
+        countA: document.getElementById('count-a'),
+        countJ: document.getElementById('count-j'),
+        countU: document.getElementById('count-u'),
+        quickActions: document.getElementById('quick-actions'),
+        holidayBanner: document.getElementById('holiday-banner'),
+        btnAllP: document.getElementById('btn-all-p'),
+        btnClearDay: document.getElementById('btn-clear-day'),
+        searchInput: document.getElementById('search-input'),
+        btnClearSearch: document.getElementById('btn-clear-search'),
+        studentList: document.getElementById('student-list'),
+        btnExportCsv: document.getElementById('btn-export-csv'),
+        btnSaveJson: document.getElementById('btn-save-json'),
+        btnImportJson: document.getElementById('btn-import-json'),
+        inputImportJson: document.getElementById('input-import-json'),
+        btnPrintHorizontal: document.getElementById('btn-print-horizontal'),
+        btnResetData: document.getElementById('btn-reset-data'),
+        printTableContainer: document.getElementById('print-table-container'),
+        scaleInputs: {
+          EP: document.getElementById('scale-EP'),
+          BP: document.getElementById('scale-BP'),
+          DP: document.getElementById('scale-DP'),
+          NP: document.getElementById('scale-NP')
+        },
+        toastBar: document.getElementById('toast-bar'),
+        toastMessage: document.getElementById('toast-message'),
+        toastBadge: document.getElementById('toast-badge'),
+        confirmModal: document.getElementById('confirm-modal'),
+        confirmTitle: document.getElementById('confirm-title'),
+        confirmDesc: document.getElementById('confirm-desc'),
+        confirmCancel: document.getElementById('confirm-cancel'),
+        confirmAccept: document.getElementById('confirm-accept')
+      };
+
+      function showToast(msg, badge) {
+        el.toastMessage.textContent = msg;
+        el.toastBadge.textContent = badge || 'GUARDADO';
+        el.toastBar.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          el.toastBar.classList.remove('show');
+        }, 1700);
+      }
+
+      function openConfirm(title, desc, onAccept) {
+        pendingConfirmCallback = onAccept;
+        el.confirmTitle.textContent = title;
+        el.confirmDesc.textContent = desc;
+        el.confirmModal.classList.remove('hidden');
+      }
+
+      function closeConfirm() {
+        pendingConfirmCallback = null;
+        el.confirmModal.classList.add('hidden');
+      }
+
+      function loadState() {
+        if (!storageAvailable) {
+          el.storageWarning.classList.remove('hidden');
+        }
+        try {
+          var raw = readStore(STORAGE_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.records) {
+              state.records = parsed.records;
+              state.boardRecords = parsed.boardRecords && typeof parsed.boardRecords === 'object' ? parsed.boardRecords : {};
+              state.scale = cloneScale(parsed.scale);
+              if (parsed.selectedDateId && DATES.some(function (d) { return d.id === parsed.selectedDateId; })) {
+                state.selectedDateId = parsed.selectedDateId;
+              }
+              var seed = createSeedData();
+              DATES.forEach(function (d) {
+                if (!state.records[d.id]) state.records[d.id] = seed.records[d.id];
+                if (!state.boardRecords[d.id]) state.boardRecords[d.id] = seed.boardRecords[d.id];
+                STUDENTS.forEach(function (s) {
+                  if (typeof state.records[d.id][s.num] !== 'string') {
+                    state.records[d.id][s.num] = '';
+                  }
+                  if (typeof state.boardRecords[d.id][s.num] !== 'string') {
+                    state.boardRecords[d.id][s.num] = '';
+                  }
+                });
+              });
+              return;
+            }
+          }
+        } catch (err) {}
+        var initial = createSeedData();
+        state.records = initial.records;
+        state.boardRecords = initial.boardRecords;
+        state.scale = cloneScale(DEFAULT_SCALE);
+      }
+
+      function saveState(notify) {
+        var now = new Date();
+        var hh = String(now.getHours()).padStart(2, '0');
+        var mm = String(now.getMinutes()).padStart(2, '0');
+        var nowTime = hh + ':' + mm;
+
+        var ok = writeStore(STORAGE_KEY, JSON.stringify({
+          selectedDateId: state.selectedDateId,
+          scale: state.scale,
+          records: state.records,
+          boardRecords: state.boardRecords,
+          updatedAt: nowTime
+        }));
+
+        if (ok) {
+          el.lastSavedIndicator.textContent = 'Guardado ' + nowTime;
+          if (notify) showToast('Guardado en el celular · Sin internet', 'GUARDADO');
+        } else {
+          el.storageWarning.classList.remove('hidden');
+          el.lastSavedIndicator.textContent = 'Modo temporal (' + nowTime + ')';
+          if (notify) showToast('Marcado en memoria (usa Respaldo .JSON)', 'TEMPORAL');
+        }
+      }
+
+      function syncScaleInputs() {
+        var keys = ['EP', 'BP', 'DP', 'NP'];
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          if (el.scaleInputs[k]) {
+            el.scaleInputs[k].value = state.scale[k];
+          }
+        }
+      }
+
+      function getStudentTotals(studentNum) {
+        var p = 0, f = 0, a = 0, j = 0;
+        var scoreSum = 0, evalCount = 0;
+        for (var i = 0; i < DATES.length; i++) {
+          var d = DATES[i];
+          if (d.holiday) continue;
+          var code = (state.records[d.id] && state.records[d.id][studentNum]) || '';
+          if (code === 'P') p++;
+          else if (code === 'F') f++;
+          else if (code === 'A') a++;
+          else if (code === 'J') j++;
+
+          var bCode = (state.boardRecords[d.id] && state.boardRecords[d.id][studentNum]) || '';
+          if (bCode && Object.prototype.hasOwnProperty.call(state.scale, bCode)) {
+            scoreSum += Number(state.scale[bCode]) || 0;
+            evalCount++;
+          }
+        }
+        var recorded = p + f + a + j;
+        var pct = recorded > 0 ? Math.round(((p + j) / recorded) * 100) : 100;
+        var avgScore = evalCount > 0 ? (scoreSum / evalCount).toFixed(2) : null;
+        return { p: p, f: f, a: a, j: j, recorded: recorded, pct: pct, avgScore: avgScore, evalCount: evalCount };
+      }
+
+      function getDaySummary(dateId) {
+        var dayMap = state.records[dateId] || {};
+        var p = 0, f = 0, a = 0, j = 0, u = 0;
+        for (var i = 0; i < STUDENTS.length; i++) {
+          var code = dayMap[STUDENTS[i].num] || '';
+          if (code === 'P') p++;
+          else if (code === 'F') f++;
+          else if (code === 'A') a++;
+          else if (code === 'J') j++;
+          else u++;
+        }
+        return { p: p, f: f, a: a, j: j, u: u, marked: STUDENTS.length - u };
+      }
+
+      function getCurrentDateObj() {
+        for (var i = 0; i < DATES.length; i++) {
+          if (DATES[i].id === state.selectedDateId) return DATES[i];
+        }
+        return DATES[0];
+      }
+
+      function renderDateStrip() {
+        var current = getCurrentDateObj();
+        el.activeDateLabel.textContent = current.full;
+
+        var summary = getDaySummary(current.id);
+        if (current.holiday) {
+          el.activeDateSub.textContent = 'Feriado nacional • Sin clases';
+          el.quickActions.classList.add('hidden');
+          el.holidayBanner.classList.remove('hidden');
+        } else {
+          el.activeDateSub.textContent = summary.marked + ' de ' + STUDENTS.length + ' registrados';
+          el.quickActions.classList.remove('hidden');
+          el.holidayBanner.classList.add('hidden');
+        }
+
+        el.dateStrip.innerHTML = '';
+        DATES.forEach(function (d) {
+          var isActive = d.id === state.selectedDateId;
+          var sum = getDaySummary(d.id);
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'date-chip' +
+            (isActive ? ' is-active' : d.holiday ? ' is-holiday' : sum.marked > 0 ? ' is-marked' : '');
+
+          var badgeText = d.holiday ? 'FER' : (sum.marked + '/' + STUDENTS.length);
+          btn.innerHTML =
+            '<span class="date-chip-short">' + d.short + '</span>' +
+            '<span class="date-chip-badge">' + badgeText + '</span>';
+
+          btn.addEventListener('click', function () {
+            state.selectedDateId = d.id;
+            saveState(false);
+            renderAll();
+            if (btn.scrollIntoView) {
+              btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+          });
+
+          el.dateStrip.appendChild(btn);
+        });
+      }
+
+      function renderDayCounters() {
+        var sum = getDaySummary(state.selectedDateId);
+        el.countP.textContent = sum.p;
+        el.countF.textContent = sum.f;
+        el.countA.textContent = sum.a;
+        el.countJ.textContent = sum.j;
+        el.countU.textContent = sum.u;
+      }
+
+      function toggleStudentCode(studentNum, code) {
+        var dateObj = getCurrentDateObj();
+        if (dateObj.holiday) {
+          showToast('Día feriado: sin registro', 'FERIADO');
+          return;
+        }
+        var dayMap = state.records[state.selectedDateId] || {};
+        var currentCode = dayMap[studentNum] || '';
+        dayMap[studentNum] = currentCode === code ? '' : code;
+        state.records[state.selectedDateId] = dayMap;
+        saveState(true);
+        renderDateStrip();
+        renderDayCounters();
+        renderStudentList();
+      }
+
+      function toggleBoardCode(studentNum, bCode) {
+        var dateObj = getCurrentDateObj();
+        if (dateObj.holiday) {
+          showToast('Día feriado: sin registro', 'FERIADO');
+          return;
+        }
+        var bMap = state.boardRecords[state.selectedDateId] || {};
+        var current = bMap[studentNum] || '';
+        bMap[studentNum] = current === bCode ? '' : bCode;
+        state.boardRecords[state.selectedDateId] = bMap;
+        saveState(true);
+        renderStudentList();
+      }
+
+      function renderStudentList() {
+        var dateObj = getCurrentDateObj();
+        var dayMap = state.records[state.selectedDateId] || {};
+        var boardMap = state.boardRecords[state.selectedDateId] || {};
+        var query = state.searchQuery.trim().toLowerCase();
+
+        el.btnClearSearch.classList.toggle('hidden', query.length === 0);
+
+        var filtered = STUDENTS.filter(function (s) {
+          if (!query) return true;
+          return (
+            s.name.toLowerCase().indexOf(query) !== -1 ||
+            String(s.num) === query ||
+            ('#' + s.num).indexOf(query) !== -1
+          );
+        });
+
+        el.studentList.innerHTML = '';
+
+        if (filtered.length === 0) {
+          el.studentList.innerHTML =
+            '<div class="card-box" style="text-align:center;color:#64748b;font-weight:700;padding:24px;">No se encontraron estudiantes con "' +
+            state.searchQuery + '".</div>';
+          return;
+        }
+
+        var codeLabels = [
+          { code: 'P', sub: 'Pres.' },
+          { code: 'F', sub: 'Falta' },
+          { code: 'A', sub: 'Atraso' },
+          { code: 'J', sub: 'Just.' }
+        ];
+
+        var boardOptions = [
+          { code: 'EP', label: 'EP · Excel.' },
+          { code: 'BP', label: 'BP · Bien' },
+          { code: 'DP', label: 'DP · Débil' },
+          { code: 'NP', label: 'NP · No pasó' }
+        ];
+
+        filtered.forEach(function (student) {
+          var activeCode = dayMap[student.num] || '';
+          var activeBoard = boardMap[student.num] || '';
+          var activeNumeric = activeBoard ? Number(state.scale[activeBoard]).toFixed(1) : '';
+          var totals = getStudentTotals(student.num);
+
+          var card = document.createElement('article');
+          card.className = 'student-card' + (activeCode ? ' state-' + activeCode : '');
+
+          var pctClass = totals.pct >= 90 ? 'pct-high' : totals.pct >= 80 ? 'pct-mid' : 'pct-low';
+
+          var btnsHtml = '';
+          for (var k = 0; k < codeLabels.length; k++) {
+            var item = codeLabels[k];
+            var isSel = activeCode === item.code;
+            var btnCls = 'code-btn' + (isSel ? ' active-' + item.code : '');
+            btnsHtml +=
+              '<button type="button" data-student="' + student.num + '" data-code="' + item.code + '" ' +
+              (dateObj.holiday ? 'disabled ' : '') +
+              'class="' + btnCls + '">' +
+              '<span class="code-btn-main">' + item.code + '</span>' +
+              '<span class="code-btn-sub">' + item.sub + '</span>' +
+              '</button>';
+          }
+
+          var boardBtnsHtml = '';
+          for (var m = 0; m < boardOptions.length; m++) {
+            var b = boardOptions[m];
+            var isPicked = activeBoard === b.code;
+            var pts = Number(state.scale[b.code]).toFixed(1);
+            boardBtnsHtml +=
+              '<button type="button" data-board-student="' + student.num + '" data-board-code="' + b.code + '" ' +
+              (dateObj.holiday ? 'disabled ' : '') +
+              'class="board-btn' + (isPicked ? ' is-picked' : '') + '">' +
+              '<span>' + b.label + '</span>' +
+              '<span class="board-pts">' + pts + '</span>' +
+              '</button>';
+          }
+
+          card.innerHTML =
+            '<div class="student-top">' +
+              '<div class="student-ident">' +
+                '<span class="student-num">' + student.num + '</span>' +
+                '<div style="min-width:0;">' +
+                  '<h2 class="student-name">' + student.name + '</h2>' +
+                  '<div class="student-stats">' +
+                    '<span>P:' + totals.p + '</span><span>•</span>' +
+                    '<span>F:' + totals.f + '</span><span>•</span>' +
+                    '<span>A:' + totals.a + '</span><span>•</span>' +
+                    '<span>J:' + totals.j + '</span>' +
+                    (totals.avgScore !== null ? '<span>• 📐 Prom. Piz.: <b>' + totals.avgScore + '</b></span>' : '') +
+                    (student.phone ? '<span>• 📞 ' + student.phone + '</span>' : '') +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+              '<span class="pct-badge ' + pctClass + '">' + totals.pct + '%</span>' +
+            '</div>' +
+            '<div class="code-grid">' + btnsHtml + '</div>' +
+            '<div class="board-section">' +
+              '<div class="board-header">' +
+                '<span>LECCIÓN / PIZARRA (CUALI → CUANTI)</span>' +
+                '<span class="board-status">' + (activeBoard ? (activeBoard + ' = ' + activeNumeric + ' pts') : 'Sin marca hoy') + '</span>' +
+              '</div>' +
+              '<div class="board-grid">' + boardBtnsHtml + '</div>' +
+            '</div>';
+
+          var buttons = card.querySelectorAll('button[data-code]');
+          for (var bIdx = 0; bIdx < buttons.length; bIdx++) {
+            (function (btn) {
+              btn.addEventListener('click', function () {
+                toggleStudentCode(Number(btn.getAttribute('data-student')), btn.getAttribute('data-code'));
+              });
+            })(buttons[bIdx]);
+          }
+
+          var bButtons = card.querySelectorAll('button[data-board-code]');
+          for (var bbIdx = 0; bbIdx < bButtons.length; bbIdx++) {
+            (function (btn) {
+              btn.addEventListener('click', function () {
+                toggleBoardCode(Number(btn.getAttribute('data-board-student')), btn.getAttribute('data-board-code'));
+              });
+            })(bButtons[bbIdx]);
+          }
+
+          el.studentList.appendChild(card);
+        });
+      }
+
+      function renderPrintTable() {
+        var headers = DATES.map(function (d) {
+          return '<th>' + d.short + '</th>';
+        }).join('');
+
+        var rows = STUDENTS.map(function (s) {
+          var totals = getStudentTotals(s.num);
+          var cells = DATES.map(function (d) {
+            if (d.holiday) return '<td><b>FER</b></td>';
+            var val = (state.records[d.id] && state.records[d.id][s.num]) || '';
+            var bVal = (state.boardRecords[d.id] && state.boardRecords[d.id][s.num]) || '';
+            var bNum = bVal ? Number(state.scale[bVal]).toFixed(1) : '';
+            var sub = bVal ? '<div class="print-sub-board">' + bVal + ':' + bNum + '</div>' : '';
+            return '<td><b>' + val + '</b>' + sub + '</td>';
+          }).join('');
+
+          return (
+            '<tr>' +
+              '<td><b>' + s.num + '</b></td>' +
+              '<td class="student-col"><b>' + s.name + '</b></td>' +
+              cells +
+              '<td><b>' + totals.p + '</b></td>' +
+              '<td><b>' + totals.f + '</b></td>' +
+              '<td><b>' + totals.a + '</b></td>' +
+              '<td><b>' + totals.j + '</b></td>' +
+              '<td><b>' + totals.pct + '%</b></td>' +
+              '<td><b>' + (totals.avgScore !== null ? totals.avgScore : '—') + '</b></td>' +
+            '</tr>'
+          );
+        }).join('');
+
+        el.printTableContainer.innerHTML =
+          '<table class="print-table">' +
+            '<thead>' +
+              '<tr>' +
+                '<th>N.º</th>' +
+                '<th class="student-col">NÓMINA DE ESTUDIANTES (2DO INF A)</th>' +
+                headers +
+                '<th>P</th><th>F</th><th>A</th><th>J</th><th>%</th><th>PIZ.</th>' +
+              '</tr>' +
+            '</thead>' +
+            '<tbody>' + rows + '</tbody>' +
+          '</table>';
+      }
+
+      function renderAll() {
+        syncScaleInputs();
+        renderDateStrip();
+        renderDayCounters();
+        renderStudentList();
+      }
+
+      function exportToCsv() {
+        try {
+          var sep = ';';
+          var headerRow = ['N.º', 'Estudiante', 'Teléfono']
+            .concat(DATES.map(function (d) { return d.holiday ? d.short + ' (FER)' : d.short; }))
+            .concat(['Total P', 'Total F', 'Total A', 'Total J', '% Asistencia', 'Prom. Pizarra/Lección', 'N.º Evaluaciones']);
+
+          var lines = [
+            'UNIDAD EDUCATIVA "DR. ENRIQUE NOBOA ARÍZAGA" - 2DO INF A - MATEMÁTICA - 3ER TRIMESTRE (2026-2027) | Escala Pizarra: EP=' +
+              state.scale.EP + ', BP=' + state.scale.BP + ', DP=' + state.scale.DP + ', NP=' + state.scale.NP,
+            headerRow.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(sep)
+          ];
+
+          STUDENTS.forEach(function (s) {
+            var totals = getStudentTotals(s.num);
+            var dateVals = DATES.map(function (d) {
+              if (d.holiday) return 'FER';
+              var aCode = (state.records[d.id] && state.records[d.id][s.num]) || '';
+              var bCode = (state.boardRecords[d.id] && state.boardRecords[d.id][s.num]) || '';
+              if (!bCode) return aCode;
+              var bNum = Number(state.scale[bCode]).toFixed(1);
+              return (aCode || 'P') + ' [' + bCode + '=' + bNum + ']';
+            });
+            var row = [s.num, s.name, s.phone || '']
+              .concat(dateVals)
+              .concat([
+                totals.p,
+                totals.f,
+                totals.a,
+                totals.j,
+                totals.pct + '%',
+                totals.avgScore !== null ? String(totals.avgScore).replace('.', ',') : '',
+                totals.evalCount
+              ]);
+            lines.push(row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(sep));
+          });
+
+          var blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var link = document.createElement('a');
+          link.href = url;
+          link.download = 'Asistencia_Pizarra_2DO_INF_A_3er_Trimestre_2026-2027.csv';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showToast('Archivo CSV (Asistencia + Pizarra) exportado', 'CSV LISTO');
+        } catch (err) {
+          showToast('No se pudo exportar el CSV', 'ERROR');
+        }
+      }
+
+      function exportJsonBackup() {
+        try {
+          var payload = {
+            app: 'Asistencia_Pizarra_2DO_INF_A_3er_Trimestre_2026_2027',
+            institution: 'Unidad Educativa "Dr. Enrique Noboa Arízaga"',
+            course: 'Segundo de Bachillerato - Informática "A" (2DO INF A)',
+            subject: 'Matemática',
+            teacher: 'Msc. Edwin Lliguipuma E.',
+            exportedAt: new Date().toISOString(),
+            selectedDateId: state.selectedDateId,
+            scale: state.scale,
+            records: state.records,
+            boardRecords: state.boardRecords
+          };
+          var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var link = document.createElement('a');
+          link.href = url;
+          link.download = 'Respaldo_Asistencia_Pizarra_2DO_INF_A_2026-2027.json';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          showToast('Respaldo .JSON descargado', 'RESPALDO');
+        } catch (err) {
+          showToast('No se pudo generar el respaldo .JSON', 'ERROR');
+        }
+      }
+
+      function handleImportJsonFile(event) {
+        var file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            var parsed = JSON.parse(String(e.target.result || '{}'));
+            if (!parsed || typeof parsed.records !== 'object') {
+              showToast('Archivo .JSON no válido', 'ERROR');
+              return;
+            }
+            openConfirm(
+              'Importar respaldo .JSON',
+              'Se cargarán los registros desde "' + file.name + '" y se guardarán en este celular.',
+              function () {
+                var seed = createSeedData();
+                DATES.forEach(function (d) {
+                  if (!parsed.records[d.id]) {
+                    parsed.records[d.id] = seed.records[d.id];
+                  } else {
+                    STUDENTS.forEach(function (s) {
+                      var val = parsed.records[d.id][s.num];
+                      parsed.records[d.id][s.num] = ['P', 'F', 'A', 'J', ''].indexOf(val) !== -1 ? val : '';
+                    });
+                  }
+                  if (parsed.boardRecords && parsed.boardRecords[d.id]) {
+                    STUDENTS.forEach(function (s) {
+                      var bVal = parsed.boardRecords[d.id][s.num];
+                      seed.boardRecords[d.id][s.num] = ['EP', 'BP', 'DP', 'NP', ''].indexOf(bVal) !== -1 ? bVal : '';
+                    });
+                  }
+                });
+                state.records = parsed.records;
+                state.boardRecords = seed.boardRecords;
+                state.scale = cloneScale(parsed.scale);
+                if (parsed.selectedDateId && DATES.some(function (d) { return d.id === parsed.selectedDateId; })) {
+                  state.selectedDateId = parsed.selectedDateId;
+                }
+                saveState(true);
+                renderAll();
+                showToast('Respaldo importado con éxito', 'IMPORTADO');
+              }
+            );
+          } catch (err) {
+            showToast('Error al leer el archivo .JSON', 'ERROR');
+          } finally {
+            event.target.value = '';
+          }
+        };
+        reader.readAsText(file, 'utf-8');
+      }
+
+      function bindEvents() {
+        ['EP', 'BP', 'DP', 'NP'].forEach(function (k) {
+          var inp = el.scaleInputs[k];
+          if (!inp) return;
+          inp.addEventListener('change', function () {
+            var val = parseFloat(inp.value);
+            if (!isNaN(val) && val >= 0 && val <= 10) {
+              state.scale[k] = Number(val.toFixed(2));
+              saveState(true);
+              renderAll();
+            } else {
+              inp.value = state.scale[k];
+              showToast('Usa un valor entre 0 y 10', 'ESCALA');
+            }
+          });
+        });
+
+        el.btnPrevDate.addEventListener('click', function () {
+          var idx = DATES.findIndex(function (d) { return d.id === state.selectedDateId; });
+          if (idx > 0) {
+            state.selectedDateId = DATES[idx - 1].id;
+            saveState(false);
+            renderAll();
+          }
+        });
+
+        el.btnNextDate.addEventListener('click', function () {
+          var idx = DATES.findIndex(function (d) { return d.id === state.selectedDateId; });
+          if (idx < DATES.length - 1) {
+            state.selectedDateId = DATES[idx + 1].id;
+            saveState(false);
+            renderAll();
+          }
+        });
+
+        el.btnAllP.addEventListener('click', function () {
+          var dateObj = getCurrentDateObj();
+          if (dateObj.holiday) return;
+          var dayMap = state.records[state.selectedDateId] || {};
+          var changed = 0;
+          STUDENTS.forEach(function (s) {
+            if (!dayMap[s.num]) {
+              dayMap[s.num] = 'P';
+              changed++;
+            }
+          });
+          state.records[state.selectedDateId] = dayMap;
+          saveState(true);
+          renderAll();
+          showToast(
+            changed > 0 ? changed + ' estudiantes marcados con P' : 'Todos ya estaban marcados',
+            'TODOS P'
+          );
+        });
+
+        el.btnClearDay.addEventListener('click', function () {
+          var dateObj = getCurrentDateObj();
+          if (dateObj.holiday) return;
+          openConfirm(
+            'Limpiar registros de ' + dateObj.short,
+            'Se borrarán las marcas de asistencia y pizarra de ' + dateObj.full + '.',
+            function () {
+              state.records[state.selectedDateId] = {};
+              state.boardRecords[state.selectedDateId] = {};
+              STUDENTS.forEach(function (s) {
+                state.records[state.selectedDateId][s.num] = '';
+                state.boardRecords[state.selectedDateId][s.num] = '';
+              });
+              saveState(true);
+              renderAll();
+              showToast('Día ' + dateObj.short + ' limpiado', 'LIMPIO');
+            }
+          );
+        });
+
+        el.searchInput.addEventListener('input', function (e) {
+          state.searchQuery = e.target.value;
+          renderStudentList();
+        });
+
+        el.btnClearSearch.addEventListener('click', function () {
+          state.searchQuery = '';
+          el.searchInput.value = '';
+          renderStudentList();
+          el.searchInput.focus();
+        });
+
+        el.btnExportCsv.addEventListener('click', exportToCsv);
+        el.btnSaveJson.addEventListener('click', exportJsonBackup);
+        el.btnImportJson.addEventListener('click', function () { el.inputImportJson.click(); });
+        el.inputImportJson.addEventListener('change', handleImportJsonFile);
+
+        el.btnPrintHorizontal.addEventListener('click', function () {
+          renderPrintTable();
+          showToast('Abriendo vista horizontal para imprimir', 'IMPRIMIR');
+          setTimeout(function () {
+            window.print();
+          }, 120);
+        });
+
+        el.btnResetData.addEventListener('click', function () {
+          openConfirm(
+            'Reiniciar todos los registros',
+            'Se borrarán todas las asistencias y calificaciones de pizarra guardadas en este celular para 2do Informática "A".',
+            function () {
+              var seed = createSeedData();
+              state.records = seed.records;
+              state.boardRecords = seed.boardRecords;
+              state.scale = cloneScale(DEFAULT_SCALE);
+              state.selectedDateId = '2026-11-25';
+              saveState(true);
+              renderAll();
+              showToast('Registros reiniciados en blanco', 'REINICIADO');
+            }
+          );
+        });
+
+        el.confirmCancel.addEventListener('click', closeConfirm);
+        el.confirmAccept.addEventListener('click', function () {
+          var cb = pendingConfirmCallback;
+          closeConfirm();
+          if (typeof cb === 'function') cb();
+        });
+      }
+
+      loadState();
+      bindEvents();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
